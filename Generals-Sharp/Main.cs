@@ -24,6 +24,7 @@ namespace Generals_Sharp
 
         // Game data.
         int playerIndex = -1;
+        private int replayId;
         int[] generals = new int[] { }; // The indicies of generals we have vision of.
         int[] cities = new int[0]; // The indicies of cities we have vision of.
         int[] map = new int[] { };
@@ -39,6 +40,9 @@ namespace Generals_Sharp
             {
                 var data = JsonConvert.DeserializeObject<GameStart>(d.ToString());
                 playerIndex = data.playerIndex;
+                replayId = data.replay_id;
+
+                Log($"Game starting! The replay will be available after the game at http://bot.generals.io/replays/{replayId}");
             });
 
             socket.On("game_update", (d) =>
@@ -129,9 +133,14 @@ namespace Generals_Sharp
                 socket.Emit("join_private", custom_game_id, user_id);
                 socket.Emit("set_force_start", custom_game_id, true);
 
-                OnLog?.Invoke(this, new Logging { Message = "Joined custom game at http://bot.generals.io/games/" + System.Net.WebUtility.UrlEncode(custom_game_id) });
+                Log("Joined custom game at http://bot.generals.io/games/" + System.Net.WebUtility.UrlEncode(custom_game_id));
 
             });
+        }
+
+        private void Log(string message)
+        {
+            OnLog?.Invoke(this, new Logging { Message = message});
         }
 
         public int[] patch(int[] old, int[] diff)

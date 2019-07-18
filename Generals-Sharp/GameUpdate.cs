@@ -19,7 +19,7 @@ namespace Generals_Sharp
         public List<Score> scores { get; set; }
         public int turn { get; set; }
         public int[] stars { get; set; }
-        public int attackIndex { get; set; }
+        // public int attackIndex { get; set; }
         public int[] generals { get; set; }
         public int[] map_diff { get; set; }
         public int[] cities_diff { get; set; }

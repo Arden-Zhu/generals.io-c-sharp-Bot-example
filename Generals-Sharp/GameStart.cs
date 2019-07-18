@@ -10,5 +10,6 @@ namespace Generals_Sharp
     public class GameStart
     {
         public int playerIndex { get; set; }
+        public int replay_id { get; set; }
     }
 }
