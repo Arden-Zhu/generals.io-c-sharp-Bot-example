@@ -1,6 +1,7 @@
 ﻿using Generals_Sharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace Generals_Sharp_Console
         {
             var l = (Logging)e;
             Console.WriteLine(l.Message);
+            File.AppendAllText("log.txt", l.Message + "\n");
         }
 
         private static void OnDisconnect(object sender, EventArgs e)

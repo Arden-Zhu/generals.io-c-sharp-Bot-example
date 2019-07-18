@@ -24,7 +24,7 @@ namespace Generals_Sharp
 
         // Game data.
         int playerIndex = -1;
-        private int replayId;
+        private string replayId;
         int[] generals = new int[] { }; // The indicies of generals we have vision of.
         int[] cities = new int[0]; // The indicies of cities we have vision of.
         int[] map = new int[] { };
@@ -51,6 +51,11 @@ namespace Generals_Sharp
                 // System.IO.File.WriteAllText("output2.txt", d.ToString());
                 var data = JsonConvert.DeserializeObject<GameUpdate>(d.ToString());
 
+                Log($"Turn {data.turn} {DateTime.Now.ToString("HH:mm:ss ff")}"); // Yes, 1/2s per turn
+                foreach (var score in data.scores)
+                {
+                    Log($"    {score.i}) {score.total} {score.tiles}");
+                }
                 cities = patch(cities, data.cities_diff);
                 map = patch(map, data.map_diff);
                 generals = data.generals;
