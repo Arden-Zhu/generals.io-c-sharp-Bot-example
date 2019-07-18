@@ -14,8 +14,8 @@ namespace Generals_Sharp
         public event EventHandler OnLog;
 
         private Socket socket;
-        string user_id = "my_example_bot_id";
-        string username = "Example Bot";
+        string user_id = "1358";
+        string username = "[Bot] BigPig";
 
         int TILE_EMPTY = -1;
         int TILE_MOUNTAIN = -2;
@@ -44,7 +44,7 @@ namespace Generals_Sharp
             socket.On("game_update", (d) =>
             {
                 // Writing the output to file.  Still can't quite figure out WTF is going on...
-               // System.IO.File.WriteAllText("output2.txt", d.ToString());
+                // System.IO.File.WriteAllText("output2.txt", d.ToString());
                 var data = JsonConvert.DeserializeObject<GameUpdate>(d.ToString());
 
                 cities = patch(cities, data.cities_diff);
@@ -116,19 +116,22 @@ namespace Generals_Sharp
 
         public void Initialise()
         {
+            socket.On("connect", () =>
+            {
+                OnLog?.Invoke(this, new Logging { Message = "Connected to server." });
+                // Set the username for the bot.
+                socket.Emit("set_username", user_id, username);
+                OnLog?.Invoke(this, new Logging { Message = "Set Username" });
 
-            // Set the username for the bot.
-            socket.Emit("set_username", user_id, username);
-            OnLog?.Invoke(this, new Logging { Message = "Set Username" });
+                // Join a custom game and force start immediately.
+                // Custom games are a great way to test your bot while you develop it because you can play against your bot!
+                var custom_game_id = "blister_bot_training_" + username.Replace(' ', '_').Replace("[Bot]", "_BOT_");
+                socket.Emit("join_private", custom_game_id, user_id);
+                socket.Emit("set_force_start", custom_game_id, true);
 
-            // Join a custom game and force start immediately.
-            // Custom games are a great way to test your bot while you develop it because you can play against your bot!
-            var custom_game_id = "blister_bot_training";
-            socket.Emit("join_private", custom_game_id, user_id);
-            socket.Emit("set_force_start", custom_game_id, true);
+                OnLog?.Invoke(this, new Logging { Message = "Joined custom game at http://bot.generals.io/games/" + System.Net.WebUtility.UrlEncode(custom_game_id) });
 
-            OnLog?.Invoke(this, new Logging { Message = "Joined custom game at http://bot.generals.io/games/" + System.Net.WebUtility.UrlEncode(custom_game_id) });
-
+            });
         }
 
         public int[] patch(int[] old, int[] diff)
