@@ -1,4 +1,5 @@
 ﻿using Generals_Sharp;
+using Generals_Sharp_Console.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ namespace Generals_Sharp_Console
     {
         static void Main(string[] args)
         {
-            var gs = new Generals_Sharp.Main();
+            var gs = new Generals_Sharp.Main(Settings1.Default.userId, Settings1.Default.username, Settings1.Default.gameId);
             gs.OnDisconnect += OnDisconnect;
             gs.OnLog += OnLog;
             gs.Initialise();

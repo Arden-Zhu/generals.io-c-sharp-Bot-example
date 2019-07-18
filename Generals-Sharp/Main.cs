@@ -14,9 +14,9 @@ namespace Generals_Sharp
         public event EventHandler OnLog;
 
         private Socket socket;
-        string user_id = "1358";
+        string userid = "1358";
         string username = "[Bot] BigPig";
-
+        private string gameId;
         int TILE_EMPTY = -1;
         int TILE_MOUNTAIN = -2;
         int TILE_FOG = -3;
@@ -29,8 +29,12 @@ namespace Generals_Sharp
         int[] cities = new int[0]; // The indicies of cities we have vision of.
         int[] map = new int[] { };
 
-        public Main()
+        public Main(string userId, string username, string gameId)
         {
+            this.userid = userId;
+            this.username = username;
+            this.gameId = gameId;
+
             socket = IO.Socket("http://botws.generals.io");
             socket.On("disconnect", (data) =>
             {
@@ -156,13 +160,13 @@ namespace Generals_Sharp
             {
                 OnLog?.Invoke(this, new Logging { Message = "Connected to server." });
                 // Set the username for the bot.
-                socket.Emit("set_username", user_id, username);
+                socket.Emit("set_username", userid, username);
                 OnLog?.Invoke(this, new Logging { Message = "Set Username" });
 
                 // Join a custom game and force start immediately.
                 // Custom games are a great way to test your bot while you develop it because you can play against your bot!
-                var custom_game_id = "blister_bot_training_" + username.Replace(' ', '_').Replace("[Bot]", "_BOT_");
-                socket.Emit("join_private", custom_game_id, user_id);
+                var custom_game_id = this.gameId;
+                socket.Emit("join_private", custom_game_id, userid);
                 socket.Emit("set_force_start", custom_game_id, true);
 
                 Log("Joined custom game at http://bot.generals.io/games/" + System.Net.WebUtility.UrlEncode(custom_game_id));

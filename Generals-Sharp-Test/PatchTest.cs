@@ -20,7 +20,7 @@ namespace Generals_Sharp_Test
             int[] diff = new int[] { 1, 1, 3 };
             int[] old = new int[] { 0, 0 };
 
-            var m = new Main();
+            var m = new Main(null, null, null);
             var ret = m.patch(old, diff);
 
             Assert.AreEqual(ret[0], 0);
@@ -34,7 +34,7 @@ namespace Generals_Sharp_Test
             int[] diff = new int[] { 0, 1, 2, 1 }; // 1, 1, 3 };
             int[] old = new int[] { 0, 0 };
 
-            var m = new Main();
+            var m = new Main(null, null, null);
             var ret = m.patch(old, diff);
 
             Assert.AreEqual(ret[0], 2);

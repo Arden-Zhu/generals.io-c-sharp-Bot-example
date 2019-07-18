@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Generals_Sharp_Console.Properties" GeneratedClassName="Settings1">
+  <Profiles />
+  <Settings>
+    <Setting Name="userId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1358</Value>
+    </Setting>
+    <Setting Name="username" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">[Bot] BigPig 1</Value>
+    </Setting>
+    <Setting Name="gameId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">BigPig_0</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
