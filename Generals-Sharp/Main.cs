@@ -68,7 +68,7 @@ namespace Generals_Sharp
                 // The next |size| terms are army values.
                 // armies[0] is the top-left corner of the map.
 
-                var armies = map.Skip(2).Take(size);
+                var armies = map.Skip(2).Take(size).ToArray();
 
                 // The last |size| terms are terrain values.
                 // terrain[0] is the top-left corner of the map.
@@ -76,51 +76,78 @@ namespace Generals_Sharp
 
                 var rnd = new Random();
                 // Make a random move.
-                while (true)
+                // Build an list of our tiles which has more than 1 solder
+                var ourTiles = new List<int>();
+                for (int i = 0; i < terrain.Length; i++)
                 {
-                    // Pick a random tile.
-                    var index = (int)Math.Floor(rnd.NextDouble() * size);
-
-                    // If we own this tile, make a random move starting from it.
-                    if (terrain[index] == playerIndex)
+                    if (terrain[i] == playerIndex && armies[i] > 1)
                     {
-                        var row = Math.Floor(Convert.ToDecimal(index / width));
-                        var col = index % width;
-                        var endIndex = index;
-
-                        var rand = rnd.NextDouble();
-                        if (rand < 0.25 && col > 0)
-                        { // left
-                            endIndex--;
-                        }
-                        else if (rand < 0.5 && col < width - 1)
-                        { // right
-                            endIndex++;
-                        }
-                        else if (rand < 0.75 && row < height - 1)
-                        { // down
-                            endIndex += width;
-                        }
-                        else if (row > 0)
-                        { //up
-                            endIndex -= width;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                        // Would we be attacking a city? Don't attack cities.
-                        if (Array.Exists(cities, ele => ele == endIndex))
-                        {
-                            continue;
-                        }
-
-                        socket.Emit("attack", index, endIndex);
-                        break;
+                        ourTiles.Add(i);
                     }
                 }
+
+                while (ourTiles.Count > 0)
+                {
+                    // Pick a random tile.
+                    var index = ourTiles[rnd.Next(ourTiles.Count)];
+
+                    // If we own this tile, make a random move starting from it.
+                    var row = Math.Floor(Convert.ToDecimal(index / width));
+                    var col = index % width;
+                    var endIndex = index;
+
+                    var rand = rnd.NextDouble();
+                    if (rand < 0.25 && col > 0)
+                    { // left
+                        endIndex--;
+                    }
+                    else if (rand < 0.5 && col < width - 1)
+                    { // right
+                        endIndex++;
+                    }
+                    else if (rand < 0.75 && row < height - 1)
+                    { // down
+                        endIndex += width;
+                    }
+                    else if (row > 0)
+                    { //up
+                        endIndex -= width;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    // Would we be attacking a city? Don't attack cities.
+                    if (Array.Exists(cities, ele => ele == endIndex))
+                    {
+                        continue;
+                    }
+
+                    if (terrain[endIndex] == TILE_MOUNTAIN)
+                        continue;
+
+                    socket.Emit("attack", index, endIndex);
+                    break;
+                }
             });
+
+            socket.On("game_lost", () =>
+            {
+                Log("I lost.");
+                LeaveGame();
+            });
+
+            socket.On("game_won", () =>
+            {
+                Log("I win!");
+                LeaveGame();
+            });
+        }
+
+        private void LeaveGame()
+        {
+            socket.Emit("leave_game");
         }
 
         public void Initialise()
@@ -145,7 +172,7 @@ namespace Generals_Sharp
 
         private void Log(string message)
         {
-            OnLog?.Invoke(this, new Logging { Message = message});
+            OnLog?.Invoke(this, new Logging { Message = message });
         }
 
         public int[] patch(int[] old, int[] diff)
